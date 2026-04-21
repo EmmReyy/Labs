@@ -7,7 +7,7 @@ int main() {
     int num;
 
     //asks user for the filename
-    std::cout << "Enter filename to create: ";
+    std::cout << "Enter name of file: ";
     std::cin >> filename;
 
     //used constructor to open file
@@ -15,7 +15,7 @@ int main() {
 
     //if outfile was not opened, print error and stop the code
     if (!outFile) {
-        std::cout << "Error creating file!" << std::endl;
+        std::cout << "couldnt open file" << std::endl;
         return 1;
     }
 
@@ -40,7 +40,7 @@ int main() {
 
     //if file not opened print error
     if (!inFile) {
-        std::cout << "Error opening file!" << std::endl;
+        std::cout << "couldnt open file" << std::endl;
         return 1;
     }
 
