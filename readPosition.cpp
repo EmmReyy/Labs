@@ -1,34 +1,36 @@
+//IMPORTANT NOTE: /n in windows counts as 2 bytes.
+
 #include <iostream>
 #include <fstream>
 #include <string>
 using namespace std;
 
-//function to display entire file content
-void displayFile() {
-    //open file in input mode
-    fstream file("data.txt", ios::in);
+void writeData();
+void displayFile();
+void showWithPositions();
+void handleUserActions();
 
-    //check if file opened
-    if (!file) {
-        cout << "error opening file\n";
-        return;
-    }
+int main() {
+    //start by writing data into file
+    writeData();
 
-    string line;
+    cout << "---------------------\n";
 
-    cout << "\nfinal file content:\n";
+    //display file with positions after writing
+    showWithPositions();
 
-    //read and display all lines
-    while (getline(file, line)) {
-        cout << line << endl;
-    }
+    //present user with menu actions (looped until exit)
+    handleUserActions();
 
-    file.close();
+    //final display before program ends
+    displayFile();
+
+    return 0;
 }
 
 //function to write data into file
 void writeData() {
-    //open file in output mode
+    //open file in output mode (this clears existing content)
     fstream file("data.txt", ios::out);
 
     if (!file) {
@@ -38,51 +40,49 @@ void writeData() {
 
     string line;
 
-    //ask user for multiple lines
+    //ask user to input multiple lines
     cout << "enter lines to write to file (type END to stop):\n";
 
     while (true) {
         getline(cin, line);
 
-        if (line == "END") {
-            break;
-        }
+        //stop condition
+        if (line == "END") break;
 
+        //write each line into file
         file << line << endl;
     }
 
-    //display position after writing
+    //tellp returns current position of write pointer
     cout << "position after writing: " << file.tellp() << endl;
 
-    //ask for overwrite
-    char choice;
-    cout << "overwrite at specific position? (y/n): ";
-    cin >> choice;
+    file.close();
+}
 
-    if (choice == 'y' || choice == 'Y') {
-        int pos;
-        string text;
+//function to display entire file content
+void displayFile() {
+    //open file in input mode
+    fstream file("data.txt", ios::in);
 
-        cout << "enter position: ";
-        cin >> pos;
+    if (!file) {
+        cout << "error opening file\n";
+        return;
+    }
 
-        //move write pointer
-        file.seekp(pos);
+    string line;
 
-        cin.ignore();
+    cout << "\nfinal file content:\n";
 
-        cout << "enter text to overwrite: ";
-        getline(cin, text);
-
-        file << text;
+    while (getline(file, line)) {
+        cout << line << endl;
     }
 
     file.close();
 }
 
-//function to read data from file
-void readData() {
-    //open file
+//function to read file and show positions
+void showWithPositions() {
+    //open file in input mode
     fstream file("data.txt", ios::in);
 
     if (!file) {
@@ -92,52 +92,115 @@ void readData() {
 
     string line;
 
-    //read line by line
     while (getline(file, line)) {
         cout << "line: " << line << endl;
+
+        //tellg returns current read pointer position
         cout << "at position: " << file.tellg() << endl;
+
         cout << endl;
-    }
-
-    char choice;
-    cout << "go back to beginning? (y/n): ";
-    cin >> choice;
-
-    if (choice == 'y' || choice == 'Y') {
-        file.clear();
-        file.seekg(0);
-
-        getline(file, line);
-        cout << "first line again: " << line << endl;
-    } else {
-        int pos;
-
-        cout << "enter position to move to: ";
-        cin >> pos;
-
-        file.clear();
-        file.seekg(pos);
-
-        getline(file, line);
-        cout << "line from that position: " << line << endl;
     }
 
     file.close();
 }
 
-int main() {
-    //write data
-    writeData();
+//function to handle user menu actions
+void handleUserActions() {
+    int choice;
 
-    cout << "---------------------\n";
+    while (true) {
+        cout << "\nwhat do you want to do now?\n";
+        cout << "[1] go back to beginning\n";
+        cout << "[2] read at a specific position\n";
+        cout << "[3] write at a specific position\n";
+        cout << "[4] end\n";
+        cout << "enter choice: ";
+        cin >> choice;
 
-    cin.ignore();
+        if (choice == 4) {
+            cout << "ending program...\n";
+            break;
+        }
 
-    //read data
-    readData();
+        fstream file;
 
-    //final display before program ends
-    displayFile();
+        switch (choice) {
 
-    return 0;
+            case 1: {
+                file.open("data.txt", ios::in);
+
+                if (!file) {
+                    cout << "error opening file\n";
+                    break;
+                }
+
+                string line;
+
+                file.seekg(0);
+
+                cin.ignore();
+                getline(file, line);
+
+                cout << "first line again: " << line << endl;
+
+                file.close();
+                break;
+            }
+
+            case 2: {
+                file.open("data.txt", ios::in);
+
+                if (!file) {
+                    cout << "error opening file\n";
+                    break;
+                }
+
+                int pos;
+                string line;
+
+                cout << "enter position: ";
+                cin >> pos;
+
+                file.clear();
+                file.seekg(pos);
+
+                cin.ignore();
+                getline(file, line);
+
+                cout << "line from that position: " << line << endl;
+
+                file.close();
+                break;
+            }
+
+            case 3: {
+                file.open("data.txt", ios::in | ios::out);
+
+                if (!file) {
+                    cout << "error opening file\n";
+                    break;
+                }
+
+                int pos;
+                string text;
+
+                cout << "enter position: ";
+                cin >> pos;
+
+                file.seekp(pos);
+
+                cin.ignore();
+                cout << "enter text to overwrite: ";
+                getline(cin, text);
+
+                file << text;
+
+                file.close();
+                break;
+            }
+
+            default:
+                cout << "invalid choice\n";
+        }
+    }
 }
