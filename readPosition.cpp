@@ -94,8 +94,9 @@ void readData() {
 
     //read line by line
     while (getline(file, line)) {
-        cout << "read: " << line << endl;
-        cout << "current read position: " << file.tellg() << endl;
+        cout << "line: " << line << endl;
+        cout << "at position: " << file.tellg() << endl;
+        cout << endl;
     }
 
     char choice;
